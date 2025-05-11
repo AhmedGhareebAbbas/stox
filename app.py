@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from recommendation_logic import generate_recommendation_yf as generate_recommendation
+from recommendation_logic import generate_recommendation_yf, get_default_recommendations
 
 app = Flask(__name__)
 
@@ -7,11 +7,12 @@ app = Flask(__name__)
 def home():
     search_result = None
     symbol = ""
+    default_recommendations = get_default_recommendations()
 
     if request.method == 'POST':
         symbol = request.form.get('stock_symbol')
         if symbol:
-            result = generate_recommendation(symbol)
+            result = generate_recommendation_yf(symbol)
             if isinstance(result, dict):
                 for key in ['price', 'sma_short', 'sma_long', 'rsi', 'macd_hist', 'bb_upper', 'bb_lower']:
                     val = result.get(key)
@@ -24,6 +25,7 @@ def home():
 
     return render_template('index.html',
                            search_result=search_result,
+                           recommendations=default_recommendations,
                            total_symbols=10,
                            sma_short_period=20,
                            sma_long_period=50,
