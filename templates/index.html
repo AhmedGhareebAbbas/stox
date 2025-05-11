@@ -1,241 +1,82 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Egyptian Stock Recommendations - Enhanced</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Optional: Add a Google Font for a more professional look -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Stock Recommendations</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #f0f2f5; /* Lighter grey background */
-            font-family: 'Roboto', sans-serif; /* Apply professional font */
-        }
-        .container {
-            margin-top: 2rem;
-            margin-bottom: 3rem;
-        }
-        .card {
-            margin-bottom: 1.5rem;
-            border: none; /* Remove default border */
-            border-radius: 0.5rem; /* Slightly more rounded corners */
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07); /* Softer shadow */
-            transition: transform 0.2s ease-in-out;
-        }
-        .card:hover {
-            transform: translateY(-5px); /* Subtle hover effect */
-        }
-        .card-header {
-            font-weight: 500; /* Medium weight */
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
-            padding: 0.75rem 1.25rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05); /* Subtle separator */
-        }
-        /* Recommendation Color Coding */
-        .card-header.strong-buy {
-            background-color: #198754; /* Darker Green */
-            color: white;
-        }
-        .card-header.potential-buy {
-            background-color: #a3cfbb; /* Lighter Green */
-            color: #0a3622;
-        }
-        .card-header.hold {
-            background-color: #adb5bd; /* Grey */
-            color: #fff;
-        }
-        .card-header.potential-sell {
-            background-color: #f1aeb5; /* Lighter Red */
-            color: #58151c;
-        }
-        .card-header.strong-sell {
-            background-color: #dc3545; /* Darker Red */
-            color: white;
-        }
-        .card-header.error {
-            background-color: #ffc107; /* Amber/Warning */
-            color: #664d03;
-        }
-        .card-body {
-            padding: 1.25rem;
-        }
-        .indicator-label {
-            font-weight: 500;
-            color: #555;
-            font-size: 0.9em;
-        }
-        .indicator-value {
-            font-weight: 400;
-            color: #333;
-        }
-        .target-price {
-            font-weight: 700; /* Bold target prices */
-        }
-        .buy-target {
-            color: #198754; /* Green for buy target */
-        }
-        .sell-target {
-            color: #dc3545; /* Red for sell target */
-        }
-        .reasons {
-            font-style: normal; /* Remove italic */
-            color: #6c757d;
-            font-size: 0.85em;
-            margin-top: 0.75rem;
-            border-top: 1px dashed #eee;
-            padding-top: 0.75rem;
-        }
-        .error-message {
-            color: #dc3545;
-            font-weight: 500;
-        }
-        .timestamp {
-            font-size: 0.8em;
-            color: #6c757d;
-            text-align: right;
-            margin-bottom: 1.5rem;
-        }
-        h1, h2 {
-            color: #343a40;
-            font-weight: 700; /* Bolder headings */
-        }
-        h2 {
-            margin-top: 2.5rem;
-            border-bottom: 2px solid #dee2e6;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .text-muted {
-            color: #6c757d !important;
-        }
-        .section-title {
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-        }
-        #search-results {
-            margin-top: 2rem;
-            /* Initially hidden or styled differently */
-        }
+        body { padding: 2rem; background-color: #f8f9fa; }
+        .card-header.strong-buy { background-color: #198754; color: #fff; }
+        .card-header.strong-sell { background-color: #dc3545; color: #fff; }
+        .card-header.hold { background-color: #adb5bd; color: #fff; }
+        .card-header.error { background-color: #ffc107; color: #212529; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="mb-3 text-center">Egyptian Stock Recommendations</h1>
-        <p class="text-muted text-center mb-1">Analysis based on {{ total_symbols }} symbols from the Egyptian Exchange (EGX).</p>
-        <p class="text-muted text-center">Using SMA({{ sma_short_period }}/{{ sma_long_period }}), RSI({{ rsi_period }}), MACD({{ macd_fast }}/{{ macd_slow }}/{{ macd_signal }}), Bollinger Bands({{ bbands_period }}/{{ bbands_std_dev }}).</p>
-        <p class="timestamp">Last Updated: {{ timestamp }}</p>
+<div class="container">
+    <h1 class="mb-4">Egyptian Stock Recommendations</h1>
 
-        <!-- Search Form -->
-        <form action="/search" method="post" class="row g-3 justify-content-center mb-4">
-            <div class="col-auto">
-                <label for="stock_symbol" class="visually-hidden">Stock Symbol</label>
-                <input type="text" class="form-control" id="stock_symbol" name="stock_symbol" placeholder="Enter Stock Symbol (e.g., COMI.CA)" required>
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </div>
-        </form>
+    <!-- Search Form -->
+    <form method="POST" class="row g-3 mb-4">
+        <div class="col-auto">
+            <input type="text" name="stock_symbol" class="form-control" placeholder="Enter Stock Symbol (e.g., COMI.CA)" required>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
 
-        <!-- Search Results Area -->
-        <div id="search-results">
-            {% if search_result %}
-            <h2 class="section-title">Search Result for {{ search_result.symbol }}</h2>
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <div class="card">
-                        <div class="card-header {{ search_result.recommendation | lower | replace(' ', '-') }}">
-                            {{ search_result.symbol }} - {{ search_result.recommendation }}
-                            {% if search_result.company_name %} <small>({{ search_result.company_name }})</small> {% endif %}
-                        </div>
-                        <div class="card-body">
-                            {% if search_result.error_message %}
-                                <p class="error-message">{{ search_result.error_message }}</p>
-                            {% else %}
-                                <p><span class="indicator-label">Current Price:</span> <span class="indicator-value">{{ search_result.price }}</span></p>
-                                <p><span class="indicator-label">Buy Target Price:</span> <span class="indicator-value target-price buy-target">{{ search_result.buy_target | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">Sell Target Price:</span> <span class="indicator-value target-price sell-target">{{ search_result.sell_target | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">Analyst Target Price:</span> <span class="indicator-value">{{ search_result.analyst_target | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">Technical Support/Resistance:</span> <span class="indicator-value">{{ search_result.support | default("N/A") }} / {{ search_result.resistance | default("N/A") }}</span></p>
-                                <hr>
-                                <p><span class="indicator-label">SMA {{ sma_short_period }}/{{ sma_long_period }}:</span> <span class="indicator-value">{{ search_result.sma_short }} / {{ search_result.sma_long }}</span></p>
-                                <p><span class="indicator-label">RSI ({{ rsi_period }}):</span> <span class="indicator-value">{{ search_result.rsi | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">MACD Hist:</span> <span class="indicator-value">{{ search_result.macd_hist | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">BBands Upper/Lower:</span> <span class="indicator-value">{{ search_result.bb_upper | default("N/A") }} / {{ search_result.bb_lower | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">Outlook:</span> <span class="indicator-value">{{ search_result.outlook | default("N/A") }}</span></p>
-                                <p class="reasons"><span class="indicator-label">Reasons:</span> {{ search_result.reasons | join("; ") }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Search Result -->
+    {% if search_result %}
+    <h3>Search Result: {{ search_result.symbol }}</h3>
+    <div class="card mb-4">
+        <div class="card-header {{ search_result.recommendation | lower | replace(' ', '-') }}">
+            {{ search_result.symbol }} - {{ search_result.recommendation }}
+        </div>
+        <div class="card-body">
+            {% if search_result.error_message %}
+                <p class="text-danger">{{ search_result.error_message }}</p>
+            {% else %}
+                <p>Price: {{ search_result.price }}</p>
+                <p>SMA: {{ search_result.sma_short }} / {{ search_result.sma_long }}</p>
+                <p>RSI: {{ search_result.rsi }}</p>
+                <p>MACD Hist: {{ search_result.macd_hist }}</p>
+                <p>BB Upper/Lower: {{ search_result.bb_upper }} / {{ search_result.bb_lower }}</p>
+                <p>Reasons: {{ search_result.reasons | join('; ') }}</p>
             {% endif %}
         </div>
-
-        <!-- Existing Recommendations -->
-        {% macro display_recommendations(recs, category_title, header_class) %}
-            {% if recs %}
-            <h2 class="section-title">{{ category_title }}</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {% for rec in recs %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-header {{ header_class }}">{{ rec.symbol }} - {{ rec.recommendation }}</div>
-                        <div class="card-body">
-                            {% if rec.error_message %}
-                                <p class="error-message">{{ rec.error_message }}</p>
-                            {% else %}
-                                <p><span class="indicator-label">Price:</span> <span class="indicator-value">{{ rec.price }}</span></p>
-                                <!-- Display targets for default recommendations too -->
-                                <p><span class="indicator-label">Buy Target:</span> <span class="indicator-value target-price buy-target">{{ rec.buy_target | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">Sell Target:</span> <span class="indicator-value target-price sell-target">{{ rec.sell_target | default("N/A") }}</span></p>
-                                <hr>
-                                <p><span class="indicator-label">SMA {{ sma_short_period }}/{{ sma_long_period }}:</span> <span class="indicator-value">{{ rec.sma_short }} / {{ rec.sma_long }}</span></p>
-                                <p><span class="indicator-label">RSI ({{ rsi_period }}):</span> <span class="indicator-value">{{ rec.rsi | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">MACD Hist:</span> <span class="indicator-value">{{ rec.macd_hist | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">BBands Upper/Lower:</span> <span class="indicator-value">{{ rec.bb_upper | default("N/A") }} / {{ rec.bb_lower | default("N/A") }}</span></p>
-                                <p><span class="indicator-label">Outlook:</span> <span class="indicator-value">{{ rec.outlook | default("N/A") }}</span></p>
-                                <p class="reasons"><span class="indicator-label">Reasons:</span> {{ rec.reasons | join("; ") }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-        {% endmacro %}
-
-        {{ display_recommendations(strong_buy_recs, "Top Strong Buy Recommendations", "strong-buy") }}
-        {{ display_recommendations(potential_buy_recs, "Top Potential Buy Recommendations", "potential-buy") }}
-        {{ display_recommendations(hold_recs, "Hold Recommendations", "hold") }}
-        {{ display_recommendations(potential_sell_recs, "Potential Sell Recommendations", "potential-sell") }}
-        {{ display_recommendations(strong_sell_recs, "Strong Sell Recommendations", "strong-sell") }}
-
-        {% if error_recs %}
-        <h2 class="section-title mt-4">Analysis Errors (Top Stocks)</h2>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for rec in error_recs %}
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-header error">{{ rec.symbol }} - Error</div>
-                    <div class="card-body">
-                        <p class="error-message">{{ rec.error_message }}</p>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-        <p class="mt-5 text-center"><small class="text-muted">Disclaimer: This information is for educational purposes only and not financial advice. Data may be delayed. Always conduct your own research before making investment decisions.</small></p>
     </div>
+    {% endif %}
 
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Default Recommendations -->
+    {% if recommendations %}
+    <h2 class="mb-3">Top 10 EGX Stocks</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for rec in recommendations %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-header {{ rec.recommendation | lower | replace(' ', '-') }}">
+                    {{ rec.symbol }} - {{ rec.recommendation }}
+                </div>
+                <div class="card-body">
+                    {% if rec.error_message %}
+                        <p class="text-danger">{{ rec.error_message }}</p>
+                    {% else %}
+                        <p>Price: {{ rec.price }}</p>
+                        <p>SMA: {{ rec.sma_short }} / {{ rec.sma_long }}</p>
+                        <p>RSI: {{ rec.rsi }}</p>
+                        <p>MACD Hist: {{ rec.macd_hist }}</p>
+                        <p>BB Upper/Lower: {{ rec.bb_upper }} / {{ rec.bb_lower }}</p>
+                        <p>Reasons: {{ rec.reasons | join('; ') }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
 </body>
 </html>
-
