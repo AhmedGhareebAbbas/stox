@@ -12,13 +12,12 @@ def home():
         symbol = request.form.get('stock_symbol')
         if symbol:
             result = generate_recommendation(symbol)
-            # Ensure scalar values for safe rendering
             if isinstance(result, dict):
                 for key in ['price', 'sma_short', 'sma_long', 'rsi', 'macd_hist', 'bb_upper', 'bb_lower']:
-                    value = result.get(key)
-                    if hasattr(value, 'item'):
+                    val = result.get(key)
+                    if hasattr(val, 'item'):
                         try:
-                            result[key] = value.item()
+                            result[key] = val.item()
                         except:
                             pass
             search_result = result
