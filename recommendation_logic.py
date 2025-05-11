@@ -40,7 +40,7 @@ def calculate_indicators(df):
     df['BB_Mid'] = close.rolling(window=BBANDS_PERIOD).mean()
     df['BB_Upper'] = df['BB_Mid'] + (close.rolling(window=BBANDS_PERIOD).std() * BBANDS_STD_DEV)
     df['BB_Lower'] = df['BB_Mid'] - (close.rolling(window=BBANDS_PERIOD).std() * BBANDS_STD_DEV)
-    
+
     return df
 
 # --- Recommendation Generator ---
@@ -68,35 +68,46 @@ def analyze_stock(symbol):
         df = calculate_indicators(df)
         latest = df.iloc[-1]
 
+        price = float(latest['Close'])
+        sma_short = float(latest[f'SMA_{SMA_SHORT_PERIOD}'])
+        sma_long = float(latest[f'SMA_{SMA_LONG_PERIOD}'])
+        rsi = float(latest[f'RSI_{RSI_PERIOD}'])
+        macd_hist = float(latest['MACD_hist'])
+        bb_upper = float(latest['BB_Upper'])
+        bb_lower = float(latest['BB_Lower'])
+
         result.update({
-            "price": round(latest['Close'], 2),
-            "sma_short": round(latest[f'SMA_{SMA_SHORT_PERIOD}'], 2),
-            "sma_long": round(latest[f'SMA_{SMA_LONG_PERIOD}'], 2),
-            "rsi": round(latest[f'RSI_{RSI_PERIOD}'], 2),
-            "macd_hist": round(latest['MACD_hist'], 2),
-            "bb_upper": round(latest['BB_Upper'], 2),
-            "bb_lower": round(latest['BB_Lower'], 2)
+            "price": price,
+            "sma_short": sma_short,
+            "sma_long": sma_long,
+            "rsi": rsi,
+            "macd_hist": macd_hist,
+            "bb_upper": bb_upper,
+            "bb_lower": bb_lower
         })
 
         reasons = []
-        if result['sma_short'] > result['sma_long']:
-            reasons.append("SMA indicates bullish trend")
-        else:
-            reasons.append("SMA indicates bearish trend")
+        if not np.isnan(sma_short) and not np.isnan(sma_long):
+            if float(sma_short) > float(sma_long):
+                reasons.append("SMA indicates bullish trend")
+            else:
+                reasons.append("SMA indicates bearish trend")
 
-        if result['rsi'] < RSI_OVERSOLD:
-            reasons.append("RSI indicates oversold")
-        elif result['rsi'] > RSI_OVERBOUGHT:
-            reasons.append("RSI indicates overbought")
+        if not np.isnan(rsi):
+            if float(rsi) < RSI_OVERSOLD:
+                reasons.append("RSI indicates oversold")
+            elif float(rsi) > RSI_OVERBOUGHT:
+                reasons.append("RSI indicates overbought")
 
-        if result['macd_hist'] > 0:
-            reasons.append("MACD histogram is positive")
-        else:
-            reasons.append("MACD histogram is negative")
+        if not np.isnan(macd_hist):
+            if float(macd_hist) > 0:
+                reasons.append("MACD histogram is positive")
+            else:
+                reasons.append("MACD histogram is negative")
 
-        if result['sma_short'] > result['sma_long'] and result['macd_hist'] > 0:
+        if float(sma_short) > float(sma_long) and float(macd_hist) > 0:
             result['recommendation'] = "Strong Buy"
-        elif result['sma_short'] < result['sma_long'] and result['macd_hist'] < 0:
+        elif float(sma_short) < float(sma_long) and float(macd_hist) < 0:
             result['recommendation'] = "Strong Sell"
         else:
             result['recommendation'] = "Hold"
@@ -118,3 +129,7 @@ def generate_recommendation_yf(symbol_or_list):
         return [analyze_stock(sym) for sym in symbol_or_list]
     else:
         raise ValueError("Input must be a string or list of strings")
+
+# --- Load Default Recommendations on Startup ---
+def get_default_recommendations():
+    return generate_recommendation_yf(TARGET_SYMBOLS)
